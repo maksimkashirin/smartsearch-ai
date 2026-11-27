@@ -1,0 +1,21 @@
+.env
+data/
+__pycache__/
+*.pyc
+.venv/
+.idea/
+.pytest_cache/
+models/
+
+# Credentials and private keys
+.env.*
+!.env.example
+*.pem
+*.key
+*.sql.gz
+*.dump
+*.log
+
+# Local development
+.vscode/
+.DS_Store

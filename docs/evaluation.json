@@ -1,0 +1,86 @@
+{
+  "evaluation_type": "rule_based_relevance",
+  "limit": 4,
+  "summary": {
+    "customer": {
+      "baseline": {
+        "queries": 10,
+        "hit1_percent": 70.0,
+        "hit4_percent": 70.0,
+        "mrr4": 0.7,
+        "precision4_percent": 60.0,
+        "zero_results_percent": 20.0,
+        "avg_duration_ms": 163.85,
+        "p95_duration_ms": 194.7
+      },
+      "lexical": {
+        "queries": 10,
+        "hit1_percent": 80.0,
+        "hit4_percent": 100,
+        "mrr4": 0.875,
+        "precision4_percent": 60.0,
+        "zero_results_percent": 0.0,
+        "avg_duration_ms": 481.55,
+        "p95_duration_ms": 727.06
+      },
+      "agent": {
+        "queries": 10,
+        "hit1_percent": 100,
+        "hit4_percent": 100,
+        "mrr4": 1.0,
+        "precision4_percent": 77.5,
+        "zero_results_percent": 0.0,
+        "avg_duration_ms": 708.09,
+        "p95_duration_ms": 1682.96
+      }
+    },
+    "functional": {
+      "baseline": {
+        "queries": 8,
+        "hit1_percent": 0,
+        "hit4_percent": 12.5,
+        "mrr4": 0.0625,
+        "precision4_percent": 9.38,
+        "zero_results_percent": 87.5,
+        "avg_duration_ms": 180.4,
+        "p95_duration_ms": 204.6
+      },
+      "lexical": {
+        "queries": 8,
+        "hit1_percent": 37.5,
+        "hit4_percent": 37.5,
+        "mrr4": 0.375,
+        "precision4_percent": 28.12,
+        "zero_results_percent": 37.5,
+        "avg_duration_ms": 590.12,
+        "p95_duration_ms": 1863.56
+      },
+      "agent": {
+        "queries": 8,
+        "hit1_percent": 100,
+        "hit4_percent": 100,
+        "mrr4": 1.0,
+        "precision4_percent": 90.62,
+        "zero_results_percent": 0.0,
+        "avg_duration_ms": 785.27,
+        "p95_duration_ms": 2312.97
+      }
+    }
+  },
+  "negative_query_results": {
+    "baseline": 0,
+    "lexical": 0,
+    "agent": 0
+  },
+  "regression_tests": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "limitations": [
+    "Development and evaluation queries overlap.",
+    "Rule-based relevance assessment.",
+    "Baseline is a custom substring search.",
+    "Small evaluation dataset."
+  ]
+}

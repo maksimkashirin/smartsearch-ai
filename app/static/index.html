@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartSearch AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fb;color:#172033;font-family:Arial,sans-serif}
+header{background:#101a30;color:white;padding:22px 6%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.logo{font-size:25px;font-weight:bold}
+.logo span{color:#8eafff}
+.badge{background:#263654;padding:9px 14px;border-radius:20px;font-size:12px}
+main{max-width:1280px;margin:auto;padding:35px 24px}
+.hero{background:linear-gradient(125deg,#142443,#314e91);color:white;padding:40px;border-radius:20px}
+.hero h1{font-size:36px;margin:12px 0}
+.hero p{color:#d6e0f6;line-height:1.6}
+.search{display:flex;gap:10px;margin-top:24px}
+input{flex:1;min-width:0;padding:17px;border:0;border-radius:10px;font-size:16px}
+button{border:0;border-radius:10px;padding:13px 22px;cursor:pointer;font-size:14px;font-weight:bold}
+.primary{background:#4778ff;color:white}
+button:disabled{opacity:.55;cursor:wait}
+.modes,.examples{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.modes label{background:#ffffff18;padding:10px 16px;border-radius:8px;cursor:pointer}
+.modes input{margin-right:7px}
+.examples button{background:#ffffff18;color:white;padding:9px 13px;font-weight:normal}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:22px 0}
+.stat{background:white;border:1px solid #e1e6ef;padding:22px;border-radius:14px}
+.stat small{color:#718096;display:block;margin-bottom:8px}
+.stat strong{font-size:23px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:18px}
+.card{background:white;border:1px solid #e1e6ef;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:13px}
+.card h3{font-size:16px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+.vendor{color:#466bd0;font-size:13px;font-weight:bold}
+.category{font-size:12px;color:#718096;line-height:1.5}
+.price{font-size:23px;font-weight:bold;margin-top:auto}
+.card a{color:#315dcc;text-decoration:none;font-weight:bold;font-size:14px}
+.card a:hover{text-decoration:underline}
+.note{font-size:12px;line-height:1.5;color:#718096}
+#status{padding:18px 0;color:#516078;line-height:1.5}
+.section{margin:30px 0 18px;font-size:23px}
+footer{text-align:center;padding:35px;color:#718096;font-size:13px}
+[hidden]{display:none!important}
+@media(max-width:600px){
+.hero{padding:22px}
+.hero h1{font-size:27px}
+.search{flex-direction:column}
+main{padding:20px 12px}
+}
+
+.analytics{background:white;border:1px solid #e1e6ef;
+border-radius:16px;padding:24px;margin-top:30px}
+.analytics-head{display:flex;justify-content:space-between;
+align-items:center;gap:12px;flex-wrap:wrap}
+.analytics-head h2{margin:0}
+.metrics-table{width:100%;border-collapse:collapse;font-size:14px}
+.metrics-table th,.metrics-table td{
+text-align:left;padding:15px 10px;border-bottom:1px solid #e1e6ef}
+.metrics-table th{color:#718096}
+.table-wrap{overflow-x:auto}
+.metric-track{height:12px;background:#edf0f7;
+border-radius:6px;overflow:hidden;margin-top:8px;min-width:90px}
+.metric-fill{height:100%;border-radius:6px;background:#4778ff}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">SmartSearch <span>AI</span></div>
+<div class="badge">ИИКузница 2026 · Аналитик данных</div>
+</header>
+
+<main>
+<section class="hero">
+<small>ИНТЕЛЛЕКТУАЛЬНЫЙ ПОИСК</small>
+<h1>Найдите именно то, что вам нужно</h1>
+<p>Поиск программного обеспечения, лицензий и оборудования
+по смыслу запроса, даже с опечатками и профессиональным сленгом.</p>
+
+<form id="searchForm" class="search">
+<input id="query" maxlength="250" required
+placeholder="Например, защита компьютеров от вирусов">
+<button id="submit" class="primary">Найти товары</button>
+</form>
+
+<div class="modes">
+<label><input type="radio" name="mode"
+value="baseline">Обычный поиск</label>
+<label><input type="radio" name="mode" value="hybrid" checked>ИИ-поиск</label>
+<label><input type="radio" name="mode" value="lexical">Текстовый поиск</label>
+</div>
+
+<div class="examples">
+<button type="button" data-query="сервер">Сервер</button>
+<button type="button" data-query="антивирь">Антивирь</button>
+<button type="button" data-query="astra linux">Astra Linux</button>
+<button type="button" data-query="anydesk">AnyDesk</button>
+<button type="button" data-query="kasperski">Kasperski</button>
+</div>
+</section>
+
+<section class="stats">
+<div class="stat"><small>Предложений в каталоге</small><strong>136 040</strong></div>
+<div class="stat"><small>Товаров в выдаче</small><strong id="total">—</strong></div>
+<div class="stat"><small>Время поиска</small><strong id="duration">—</strong></div>
+<div class="stat"><small>Индексация нейросетью</small><strong id="progress">—</strong></div>
+</section>
+
+<div id="status" role="status" aria-live="polite">
+Введите запрос или выберите один из примеров.
+</div>
+
+<h2 id="resultTitle" class="section" hidden>Результаты поиска</h2>
+<div id="results" class="grid"></div>
+
+<section id="relatedSection" hidden>
+<h2 class="section">Сопутствующие решения</h2>
+<p class="note">Рекомендации на основе каталога и источников производителей.</p>
+<div id="recommendations" class="grid"></div>
+</section>
+
+<section id="alternativesSection" hidden>
+<h2 class="section">Альтернативные решения</h2>
+<p class="note">
+Другие продукты аналогичного назначения из каталога.
+</p>
+<div id="alternatives" class="grid"></div>
+</section>
+<section id="unavailableSection" hidden>
+<h2 class="section">Недоступные предложения каталога</h2>
+<p class="note">
+Эти продукты присутствуют в исходном каталоге,
+но их доступность и возможность покупки не подтверждены.
+</p>
+<div id="unavailableProducts" class="grid"></div>
+</section>
+<section class="analytics" id="analyticsPanel">
+<div class="analytics-head">
+<h2>Аналитика поисковой системы</h2>
+<button class="primary" id="refreshMetrics">Обновить</button>
+</div>
+
+<p class="note">
+Накопленная статистика фактически выполненных запросов,
+включая тестовые запросы разработчика.
+</p>
+
+<div class="stats">
+<div class="stat">
+<small>Всего запросов</small>
+<strong id="metricRequests">—</strong>
+</div>
+<div class="stat">
+<small>Без результатов</small>
+<strong id="metricZero">—</strong>
+</div>
+<div class="stat">
+<small>Среднее время</small>
+<strong id="metricAverage">—</strong>
+</div>
+</div>
+
+<div class="table-wrap">
+<table class="metrics-table">
+<thead>
+<tr>
+<th>Алгоритм</th>
+<th>Запросы</th>
+<th>Пустая выдача</th>
+<th>Среднее время</th>
+<th>P95</th>
+</tr>
+</thead>
+<tbody id="metricRows"></tbody>
+</table>
+</div>
+
+<p class="note" id="metricsStatus"></p>
+
+<p class="note">
+P95 — время, в которое укладывается 95% запросов.
+Накопленная статистика не является контролируемым
+сравнительным экспериментом.
+</p>
+</section>
+</main>
+
+<footer>
+SmartSearch AI · Демонстрационный стенд для Softline Store · 2026
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function element(tag, value, className) {
+    const node = document.createElement(tag);
+    node.textContent = value ?? '';
+    if (className) node.className = className;
+    return node;
+}
+
+function safeLink(url, label) {
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'https:') return null;
+        const link = element('a', label);
+        link.href = parsed.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        return link;
+    } catch {
+        return null;
+    }
+}
+
+function renderCard(item) {
+    const card = element('article', '', 'card');
+
+    card.append(
+        element('div', item.vendor || 'Каталог Softline', 'vendor'),
+        element('h3', item.name),
+        element('div', item.category_path, 'category')
+    );
+
+    if (item.purpose) {
+        card.append(element('p', item.purpose));
+    }
+
+    card.append(element('div',
+        item.price > 0
+            ? Number(item.price).toLocaleString('ru-RU') + ' ₽'
+            : 'Цена по запросу',
+        'price'
+    ));
+
+    const productLink = safeLink(item.url, 'Открыть товар в магазине');
+    if (productLink) card.append(productLink);
+
+    const sourceLink = safeLink(item.source, 'Источник рекомендации');
+    if (sourceLink) card.append(sourceLink);
+
+    if (item.note) card.append(element('div', item.note, 'note'));
+
+    return card;
+}
+
+async function search() {
+    const q = $('query').value.trim();
+    if (!q) return;
+
+    const mode = document.querySelector(
+        'input[name="mode"]:checked'
+    ).value;
+
+    $('submit').disabled = true;
+    $('submit').textContent = 'Поиск...';
+    $('status').textContent = 'Анализируем запрос и каталог...';
+    $('results').replaceChildren();
+    $('recommendations').replaceChildren();
+    $('alternatives').replaceChildren();
+    $('unavailableProducts').replaceChildren();
+    $('unavailableSection').hidden = true;
+    $('alternativesSection').hidden = true;
+    $('relatedSection').hidden = true;
+    $('resultTitle').hidden = true;
+    $('total').textContent = '—';
+    $('duration').textContent = '—';
+
+    const params = new URLSearchParams({q, limit: 8});
+    const endpoint = mode === 'hybrid'
+        ? '/api/agent'
+        : mode === 'baseline'
+            ? '/api/baseline'
+            : '/api/search';
+
+    if (mode === 'lexical') params.set('mode', 'lexical');
+
+    try {
+        const response = await fetch(endpoint + '?' + params);
+        if (!response.ok) throw new Error('Ошибка API');
+
+        const data = await response.json();
+
+        $('total').textContent = data.total;
+        $('duration').textContent =
+            (data.duration_ms / 1000).toFixed(2) + ' сек.';
+
+        $('progress').textContent = data.index_total
+            ? (100 * data.indexed_products /
+                data.index_total).toFixed(1) + '%'
+            : '—';
+
+        let message = data.mode === 'hybrid'
+            ? 'Использован гибридный ИИ-поиск.'
+            : data.mode === 'baseline'
+            ? 'Использован обычный поиск по названию.'
+            : 'Использован улучшенный текстовый поиск.';
+
+        if (data.fallback_reason === 'indexing_in_progress')
+            message += ' Нейросеть индексирует каталог.';
+
+        if (data.fallback_reason === 'model_unavailable')
+            message += ' Семантическая модель временно недоступна.';
+
+        if (data.normalized_query !== q)
+            message += ' Нормализованный запрос: ' +
+                data.normalized_query + '.';
+
+        if (data.total < 4)
+            message += ' В каталоге недостаточно результатов.';
+
+        if (data.intent)
+            message += ' Намерение: ' + data.intent.label + '.';
+
+        $('status').textContent = message;
+        refreshMetrics();
+        $('resultTitle').hidden = false;
+
+        for (const item of data.items || [])
+            $('results').append(renderCard(item));
+
+        if (data.unavailable_alternatives?.length) {
+            $('unavailableSection').hidden = false;
+
+            for (const item of data.unavailable_alternatives)
+                $('unavailableProducts').append(
+                    renderCard(item)
+                );
+        }
+
+        if (data.alternatives?.length) {
+            $('alternativesSection').hidden = false;
+
+            for (const item of data.alternatives)
+                $('alternatives').append(renderCard(item));
+        }
+
+        if (data.recommendations?.length) {
+            $('relatedSection').hidden = false;
+
+            for (const item of data.recommendations)
+                $('recommendations').append(renderCard(item));
+        }
+
+    } catch (error) {
+        $('status').textContent =
+            'Не удалось выполнить поиск. Попробуйте ещё раз.';
+    } finally {
+        $('submit').disabled = false;
+        $('submit').textContent = 'Найти товары';
+    }
+}
+
+$('searchForm').addEventListener('submit', event => {
+    event.preventDefault();
+    search();
+});
+
+document.querySelectorAll('[data-query]').forEach(button => {
+    button.addEventListener('click', () => {
+        if ($('submit').disabled) return;
+        $('query').value = button.dataset.query;
+        search();
+    });
+});
+
+async function refreshMetrics() {
+    const button = $('refreshMetrics');
+    if (button.disabled) return;
+    button.disabled = true;
+
+    const labels = {
+        baseline: 'Обычный поиск',
+        lexical: 'Текстовый поиск',
+        hybrid: 'Гибридный поиск',
+        agent: 'ИИ-агент'
+    };
+
+    try {
+        const response = await fetch('/api/metrics');
+        if (!response.ok) throw new Error('Metrics unavailable');
+
+        const data = await response.json();
+        const rows = data.metrics || [];
+
+        const total = rows.reduce(
+            (sum, r) => sum + Number(r.requests), 0
+        );
+
+        const zero = rows.reduce(
+            (sum, r) => sum + Number(r.zero_results), 0
+        );
+
+        const average = total ? rows.reduce(
+            (sum, r) => sum +
+                Number(r.requests) * Number(r.avg_duration_ms),
+            0
+        ) / total : 0;
+
+        $('metricRequests').textContent = total;
+        $('metricZero').textContent = total
+            ? (100 * zero / total).toFixed(1) + '%'
+            : '—';
+        $('metricAverage').textContent = total
+            ? (average / 1000).toFixed(2) + ' сек.'
+            : '—';
+
+        $('metricRows').replaceChildren();
+
+        const maxTime = Math.max(
+            1, ...rows.map(r => Number(r.avg_duration_ms))
+        );
+
+        for (const r of rows) {
+            const tr = document.createElement('tr');
+
+            let label = labels[r.requested_mode]
+                || r.requested_mode;
+
+            if (r.requested_mode === 'agent' ||
+                r.requested_mode !== r.actual_mode) {
+                label += ' / ' +
+                    (labels[r.actual_mode] || r.actual_mode);
+            }
+
+            const timeCell = element(
+                'td',
+                (Number(r.avg_duration_ms) / 1000)
+                    .toFixed(2) + ' сек.'
+            );
+
+            const track = element('div', '', 'metric-track');
+            const fill = element('div', '', 'metric-fill');
+
+            fill.style.width =
+                (100 * Number(r.avg_duration_ms) / maxTime) + '%';
+
+            track.append(fill);
+            timeCell.append(track);
+
+            tr.append(
+                element('td', label),
+                element('td', r.requests),
+                element('td', r.zero_results_percent + '%'),
+                timeCell,
+                element('td',
+                    (Number(r.p95_duration_ms) / 1000)
+                    .toFixed(2) + ' сек.'
+                )
+            );
+
+            $('metricRows').append(tr);
+        }
+
+        $('metricsStatus').textContent =
+            'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+
+    } catch (error) {
+        $('metricsStatus').textContent =
+            'Не удалось загрузить статистику.';
+    } finally {
+        button.disabled = false;
+    }
+}
+
+$('refreshMetrics').addEventListener('click', refreshMetrics);
+refreshMetrics();
+
+const suggestionInput = document.getElementById('query');
+const suggestionList = document.createElement('datalist');
+
+suggestionList.id = 'smartsearchSuggestions';
+
+document.body.append(suggestionList);
+
+suggestionInput.setAttribute(
+    'list', suggestionList.id
+);
+suggestionInput.setAttribute('autocomplete', 'off');
+
+let suggestionTimer = null;
+let suggestionController = null;
+
+suggestionInput.addEventListener('input', () => {
+    clearTimeout(suggestionTimer);
+
+    if (suggestionController)
+        suggestionController.abort();
+
+    suggestionList.replaceChildren();
+
+    const q = suggestionInput.value.trim();
+
+    if (q.length < 2 || q.length > 80)
+        return;
+
+    suggestionTimer = setTimeout(async () => {
+        const controller = new AbortController();
+        suggestionController = controller;
+
+        try {
+            const params = new URLSearchParams({
+                q: q,
+                limit: '8'
+            });
+
+            const response = await fetch(
+                '/api/suggest?' + params,
+                {signal: controller.signal}
+            );
+
+            if (!response.ok)
+                return;
+
+            const data = await response.json();
+
+            if (suggestionInput.value.trim() !== q)
+                return;
+
+            for (const value of data.suggestions) {
+                const option = document.createElement('option');
+                option.value = value;
+                suggestionList.append(option);
+            }
+
+        } catch (error) {
+            // Search remains available.
+        }
+    }, 350);
+});
+</script>
+</body>
+</html>
